@@ -20,9 +20,9 @@ In this case after 5 minutes, the spawner will "lock" and players will be requir
 ### Requirements
 - **Minecraft Server**: Spigot/Paper 1.21.1 (For now. Future builds may include support back to 1.16. Dont ask for 1.8.8 support)
 - **Dependencies**:
-  - [RoseStacker](https://www.spigotmc.org/resources/rosestacker.84994/) (for stacked spawners and blocks).
+  - [RoseStacker](https://modrinth.com/plugin/rosestacker) (for stacked spawners and blocks).
   - [Vault](https://www.spigotmc.org/resources/vault.34315/) (for economy integration).
-  - .
+  - [FactionsUUID](https://www.spigotmc.org/resources/factionsuuid.1035/) (well.... duh)
 
 ### Installation
 1. Download the latest `SlashFTop-<version>.jar` from the [Releases](https://github.com/thegeekedgamer/SlashFTop/releases) page.
