@@ -55,7 +55,7 @@ dependencies {
     compileOnly 'xyz.xenondevs:particle:1.8.1'
     compileOnly 'com.google.code.gson:gson:2.10'
     compileOnly 'org.apache.commons:commons-lang3:3.12.0'
-    compileOnly 'com.zaxxer:HikariCP:6.2.1'
+    compileOnly 'com.zaxxer:HikariCP:6.3.0'
     compileOnly 'com.mysql:mysql-connector-j:9.1.0'
     compileOnly 'com.github.dmulloy2:ProtocolLib:c9ee2f16e2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
@@ -78,7 +78,7 @@ tasks.shadowJar {
         include(dependency('xyz.xenondevs.invui:invui-core:1.44'))
         include(dependency('xyz.xenondevs.invui:inventory-access:1.44'))
         include(dependency('xyz.xenondevs.invui:inventory-access-r20:1.44:remapped-mojang'))
-        include(dependency('com.zaxxer:HikariCP:6.2.1'))
+        include(dependency('com.zaxxer:HikariCP:6.3.0'))
         include(dependency('com.mysql:mysql-connector-j:9.1.0'))
         include(dependency('com.github.AvarionMC:yaml:1.1.8'))
     }
