@@ -256,33 +256,59 @@ public class BlockTracker implements Listener {
             return;
         }
 
-        StackedBlock stackedBlock = RoseStackerAPI.getInstance().getStackedBlock(block);
-        if (stackedBlock != null) {
-            trackBlock(stackedBlock);
-            return;
-        }
-
         ReentrantLock lock = getLockForLocation(location);
         lock.lock();
         try {
-            BlockData blockData = new BlockData(
-                    plugin,
-                    location,
-                    System.currentTimeMillis(),
-                    1,
-                    blockType.name(),
-                    false,
-                    factionId
-            );
+            // Check if the block is already tracked
+            if (trackedBlocks.containsKey(location)) {
+                Log.info("Block at " + location + " is already tracked. Skipping.");
+                return;
+            }
 
-            trackedBlocks.put(location, blockData);
-            scheduleLockTimer(blockData);
-            dirtyFactions.add(factionId);
-            blockData.saveAsync(factionId).exceptionally(throwable -> {
-                Log.error("Failed to save block data at " + location + ": " + throwable.getMessage());
-                return null;
-            });
-            Log.info("Single block at " + location + " has been added to tracking.");
+            // Check if RoseStacker has already created a StackedBlock
+            StackedBlock stackedBlock = RoseStackerAPI.getInstance().getStackedBlock(block);
+            if (stackedBlock != null) {
+                int stackSize = stackedBlock.getStackSize();
+                if (stackSize <= 0) {
+                    Log.warn("Block at " + location + " has an invalid stack size of " + stackSize + " on placement. Defaulting to 1.");
+                    stackSize = 1;
+                }
+                BlockData blockData = new BlockData(
+                        plugin,
+                        location,
+                        System.currentTimeMillis(),
+                        stackSize,
+                        blockType.name(),
+                        false,
+                        factionId
+                );
+                trackedBlocks.put(location, blockData);
+                scheduleLockTimer(blockData);
+                dirtyFactions.add(factionId);
+                blockData.saveAsync(factionId).exceptionally(throwable -> {
+                    Log.error("Failed to save block data at " + location + ": " + throwable.getMessage());
+                    return null;
+                });
+                Log.info("Block at " + location + " has been added to tracking with stack size: " + stackSize);
+            } else {
+                BlockData blockData = new BlockData(
+                        plugin,
+                        location,
+                        System.currentTimeMillis(),
+                        1,
+                        blockType.name(),
+                        false,
+                        factionId
+                );
+                trackedBlocks.put(location, blockData);
+                scheduleLockTimer(blockData);
+                dirtyFactions.add(factionId);
+                blockData.saveAsync(factionId).exceptionally(throwable -> {
+                    Log.error("Failed to save block data at " + location + ": " + throwable.getMessage());
+                    return null;
+                });
+                Log.info("Single block at " + location + " has been added to tracking.");
+            }
         } finally {
             lock.unlock();
         }
@@ -317,33 +343,17 @@ public class BlockTracker implements Listener {
             return;
         }
 
+        Location location = block.getLocation();
+        Log.info("BlockPlaceEvent for block at " + location);
+
         StackedBlock stackedBlock = RoseStackerAPI.getInstance().getStackedBlock(block);
         if (stackedBlock != null) {
-            Location location = block.getLocation();
-            ReentrantLock lock = getLockForLocation(location);
-            lock.lock();
-            try {
-                BlockData blockData = trackedBlocks.get(location);
-                if (blockData != null) {
-                    blockData.setAmount(stackedBlock.getStackSize());
-                    String factionId = blockData.getLocationFactionId();
-                    if (factionId != null) {
-                        dirtyFactions.add(factionId);
-                        Log.info("Block stack updated at " + location + " with new stack size: " + stackedBlock.getStackSize());
-                        blockData.saveAsync(factionId).exceptionally(throwable -> {
-                            Log.error("Failed to save block data at " + location + ": " + throwable.getMessage());
-                            return null;
-                        });
-                    }
-                } else {
-                    trackBlock(stackedBlock);
-                }
-            } finally {
-                lock.unlock();
-            }
+            Log.info("Block at " + location + " is already stacked with size: " + stackedBlock.getStackSize());
         } else {
-            trackSingleBlock(block);
+            Log.info("Block at " + location + " is not yet stacked.");
         }
+
+        trackSingleBlock(block);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -525,12 +535,32 @@ public class BlockTracker implements Listener {
         String factionId = FactionUtils.getFactionIdAtLocation(location);
         if (factionId == null) return;
 
+        int currentStackSize = stackedBlock.getStackSize();
+        int increaseAmount = event.getIncreaseAmount();
+        boolean isNew = event.isNew();
+        Log.info("BlockStackEvent at " + location + ": currentStackSize=" + currentStackSize + ", increaseAmount=" + increaseAmount + ", isNew=" + isNew);
+
+        if (event.isNew()) {
+            Log.info("Ignoring BlockStackEvent for new block at " + location + ". Handled by onBlockPlace.");
+            return;
+        }
+
         ReentrantLock lock = getLockForLocation(location);
         lock.lock();
         try {
             BlockData blockData = trackedBlocks.get(location);
-            if (blockData != null && !event.isNew()) {
+            if (blockData != null) {
                 int newAmount = blockData.getAmount() + event.getIncreaseAmount();
+                if (newAmount <= 0) {
+                    Log.warn("New stack size for block at " + location + " would be " + newAmount + ". Removing from tracking.");
+                    trackedBlocks.remove(location);
+                    blockData.deleteAsync().exceptionally(throwable -> {
+                        Log.error("Failed to delete block data at " + location + ": " + throwable.getMessage());
+                        return null;
+                    });
+                    dirtyFactions.add(factionId);
+                    return;
+                }
                 blockData.setAmount(newAmount);
                 dirtyFactions.add(factionId);
                 Log.info("Block stack increased at " + location + " by " + event.getIncreaseAmount() + ". New stack size: " + newAmount);
@@ -539,7 +569,7 @@ public class BlockTracker implements Listener {
                     return null;
                 });
             } else {
-                trackBlock(stackedBlock);
+                Log.warn("Block at " + location + " is not tracked during BlockStackEvent. This should not happen.");
             }
         } finally {
             lock.unlock();

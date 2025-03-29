@@ -27,6 +27,7 @@ public class SpawnerData {
     private boolean locked;
 
     public SpawnerData(FTopPlugin plugin, Location location, long placedTimestamp, int stackSize, String spawnerType, boolean locked) {
+        // if the stack size is zero, we get a value for zero spawners = $0.00, and we dont want that.
         if (stackSize <= 0) {
             throw new IllegalArgumentException("Stack size must be greater than 0, got: " + stackSize);
         }

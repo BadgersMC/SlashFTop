@@ -275,32 +275,57 @@ public class SpawnerTracker implements Listener {
             return;
         }
 
-        StackedSpawner stackedSpawner = RoseStackerAPI.getInstance().getStackedSpawner(block);
-        if (stackedSpawner != null) {
-            trackSpawner(stackedSpawner);
-            return;
-        }
-
         ReentrantLock lock = getLockForLocation(location);
         lock.lock();
         try {
-            SpawnerData spawnerData = new SpawnerData(
-                    plugin,
-                    location,
-                    System.currentTimeMillis(),
-                    1,
-                    Objects.requireNonNull(spawnerState.getSpawnedType()).name(),
-                    false
-            );
+            // Check if the spawner is already tracked
+            if (trackedSpawners.containsKey(location)) {
+                Log.info("Spawner at " + location + " is already tracked. Skipping.");
+                return;
+            }
 
-            trackedSpawners.put(location, spawnerData);
-            scheduleLockTimer(spawnerData);
-            dirtyFactions.add(factionId);
-            spawnerData.saveAsync(factionId).exceptionally(throwable -> {
-                Log.error("Failed to save spawner data at " + location + ": " + throwable.getMessage());
-                return null;
-            });
-            Log.info("Single spawner at " + location + " has been added to tracking.");
+            // Check if RoseStacker has already created a StackedSpawner
+            StackedSpawner stackedSpawner = RoseStackerAPI.getInstance().getStackedSpawner(block);
+            if (stackedSpawner != null) {
+                int stackSize = stackedSpawner.getStackSize();
+                if (stackSize <= 0) {
+                    Log.warn("Spawner at " + location + " has an invalid stack size of " + stackSize + " on placement. Defaulting to 1.");
+                    stackSize = 1;
+                }
+                SpawnerData spawnerData = new SpawnerData(
+                        plugin,
+                        location,
+                        System.currentTimeMillis(),
+                        stackSize,
+                        Objects.requireNonNull(spawnerState.getSpawnedType()).name(),
+                        false
+                );
+                trackedSpawners.put(location, spawnerData);
+                scheduleLockTimer(spawnerData);
+                dirtyFactions.add(factionId);
+                spawnerData.saveAsync(factionId).exceptionally(throwable -> {
+                    Log.error("Failed to save spawner data at " + location + ": " + throwable.getMessage());
+                    return null;
+                });
+                Log.info("Spawner at " + location + " has been added to tracking with stack size: " + stackSize);
+            } else {
+                SpawnerData spawnerData = new SpawnerData(
+                        plugin,
+                        location,
+                        System.currentTimeMillis(),
+                        1,
+                        Objects.requireNonNull(spawnerState.getSpawnedType()).name(),
+                        false
+                );
+                trackedSpawners.put(location, spawnerData);
+                scheduleLockTimer(spawnerData);
+                dirtyFactions.add(factionId);
+                spawnerData.saveAsync(factionId).exceptionally(throwable -> {
+                    Log.error("Failed to save spawner data at " + location + ": " + throwable.getMessage());
+                    return null;
+                });
+                Log.info("Single spawner at " + location + " has been added to tracking.");
+            }
         } finally {
             lock.unlock();
         }
@@ -335,9 +360,14 @@ public class SpawnerTracker implements Listener {
             return;
         }
 
+        Location location = block.getLocation();
+        Log.info("BlockPlaceEvent for spawner at " + location);
+
         StackedSpawner stackedSpawner = RoseStackerAPI.getInstance().getStackedSpawner(block);
         if (stackedSpawner != null) {
-            return;
+            Log.info("Spawner at " + location + " is already stacked with size: " + stackedSpawner.getStackSize());
+        } else {
+            Log.info("Spawner at " + location + " is not yet stacked.");
         }
 
         trackSingleSpawner(block);
@@ -416,12 +446,32 @@ public class SpawnerTracker implements Listener {
         String factionId = FactionUtils.getFactionIdAtLocation(location);
         if (factionId == null) return;
 
+        int currentStackSize = stackedSpawner.getStackSize();
+        int increaseAmount = event.getIncreaseAmount();
+        boolean isNew = event.isNew();
+        Log.info("SpawnerStackEvent at " + location + ": currentStackSize=" + currentStackSize + ", increaseAmount=" + increaseAmount + ", isNew=" + isNew);
+
+        if (event.isNew()) {
+            Log.info("Ignoring SpawnerStackEvent for new spawner at " + location + ". Handled by onBlockPlace.");
+            return;
+        }
+
         ReentrantLock lock = getLockForLocation(location);
         lock.lock();
         try {
             SpawnerData spawnerData = trackedSpawners.get(location);
-            if (spawnerData != null && !event.isNew()) {
+            if (spawnerData != null) {
                 int newStackSize = spawnerData.getStackSize() + event.getIncreaseAmount();
+                if (newStackSize <= 0) {
+                    Log.warn("New stack size for spawner at " + location + " would be " + newStackSize + ". Removing from tracking.");
+                    trackedSpawners.remove(location);
+                    spawnerData.deleteAsync().exceptionally(throwable -> {
+                        Log.error("Failed to delete spawner data at " + location + ": " + throwable.getMessage());
+                        return null;
+                    });
+                    dirtyFactions.add(factionId);
+                    return;
+                }
                 spawnerData.setStackSize(newStackSize);
                 dirtyFactions.add(factionId);
                 Log.info("Spawner stack increased at " + location + " by " + event.getIncreaseAmount() + ". New stack size: " + newStackSize);
@@ -430,7 +480,7 @@ public class SpawnerTracker implements Listener {
                     return null;
                 });
             } else {
-                trackSpawner(stackedSpawner);
+                Log.warn("Spawner at " + location + " is not tracked during SpawnerStackEvent. This should not happen.");
             }
         } finally {
             lock.unlock();
