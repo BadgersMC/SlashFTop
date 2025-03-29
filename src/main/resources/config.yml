@@ -1,1 +1,61 @@
-# A journey of 1,000 lines starts with a single char
+# -=[DATABASE SETTINGS]=-
+database:
+  # Database type: 'sqlite' or 'mysql'
+  type: sqlite
+  # Database host for MySQL (ignored for SQLite)
+  host: localhost
+  # Database port for MySQL (ignored for SQLite)
+  port: 3306
+  # Database name (file name for SQLite or schema name for MySQL)
+  name: ftop_db
+  # Username for MySQL authentication
+  username: user
+  # Password for MySQL authentication
+  password: password
+
+# -=[FTOP SETTINGS]=-
+ftop:
+  # Base values for spawners by type
+  spawner-values:
+    ZOMBIE: 1000.0
+    SKELETON: 1000.0
+    SPIDER: 800.0
+    CREEPER: 1200.0
+  # Base values for blocks by type
+  block-values:
+    DIAMOND_BLOCK: 1000.0
+    EMERALD_BLOCK: 800.0
+    GOLD_BLOCK: 500.0
+    IRON_BLOCK: 200.0
+  # Interval (in seconds) to recalculate FTop values
+  calculation-interval: 300
+  # Whether to calculate FTop values asynchronously to reduce performance impact
+  async-value-update: true
+  # Default base value of a spawner when placed
+  default-spawner-value: 1000.0
+  # Number of decimal places for displaying percentages in placeholders
+  placeholder-percentage-decimals: 2
+  # Interval (in seconds) to announce FTop standings
+  announcement-interval: 600
+  # Number of threads to use for faction value recalculation (1 to available processors)
+  recalculation-threads: 4
+
+# -=[AGING SETTINGS]=-
+aging:
+  # Number of days over which a spawner or block's value grows to 100%
+  duration-days: 4
+  # Starting percentage of a spawner or block's value when placed (1.0 = 1%)
+  starting-percentage: 1.0
+  # Number of minutes before a newly placed spawner or block locks (can be broken for free during this time)
+  lock-grace-period-minutes: 5
+  # Percentage of a spawner or block's current value required to break it after locking (50.0 = 50%)
+  locked-break-cost-percentage: 50.0
+
+# -=[MISC SETTINGS]=-
+misc:
+  # Toggle debug mode for detailed logs
+  debug-mode: false
+  # Language file to use for plugin messages
+  lang: en.yml
+  # Prefix used for messages in chat and logs
+  prefix: "&6[SlashFTop]"

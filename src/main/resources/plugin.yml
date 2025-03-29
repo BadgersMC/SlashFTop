@@ -1,20 +1,24 @@
-main: ${PACKAGE}.${NAME}
-name: ${NAME}
-version: "${VERSION}"
-api-version: "1.21.1"
-author: AUTHOR
-description: DESCRIPTION
+main: com.gmail.thegeekedgamer.slashftop.FTopPlugin
+name: SlashFTop
+version: 1.0
+api-version: 1.21
+author: BadgersMC
+description: A plugin that extends rosestacker to provide stacked spawner/block based Faction top system
+depend:
+  - RoseStacker
+softdepend:
+  - ShopGUIPlus
 commands:
-  ex:
-    description: Base command for EXAMPLE
-    usage: "For a list of commands, type /ex help"
-    aliases: example
+  ftop:
+    description: Show a Ftop leaderboard
+    usage: "/ftop <page>"
+    aliases: ftop
 permissions:
-  example.test:
-    description: DESCRIPTION
+  ftop.base:
+    description: Default perms
     default: true
-  example.*:
+  ftop.admin:
     description: Grants all other permissions
     default: false
     children:
-      example.test: true
+      ftop.base: true
