@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 import java.text.SimpleDateFormat
 
 plugins {
-    id 'com.gradleup.shadow' version '8.3.3'
+    id 'com.gradleup.shadow' version '8.3.6'
     id 'java'
     id 'io.freefair.lombok' version '8.10'
 }
