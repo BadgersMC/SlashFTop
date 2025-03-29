@@ -47,7 +47,7 @@ dependencies {
     implementation 'xyz.xenondevs.invui:inventory-access-r20:1.44:remapped-mojang'
     implementation 'xyz.xenondevs.invui:inventory-access:1.44'
     implementation 'com.github.AvarionMC:yaml:1.1.8'
-    compileOnly 'io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT'
     compileOnly 'dev.rosewood:rosestacker:1.5.32'
     compileOnly 'org.mineacademy.plugin:FactionsUUID:1.6.9.5-U0.6.40-343'
     compileOnly 'com.github.brcdev-minecraft:shopgui-api:3.0.0'
@@ -64,7 +64,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
     // mockito-core is optional but can be included for additional utilities
     testImplementation 'org.mockito:mockito-core:5.11.0'
-    testImplementation "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+    testImplementation "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
     testImplementation 'dev.rosewood:rosestacker:1.5.32'
     testImplementation 'com.github.MilkBowl:VaultAPI:1.7'
 }
