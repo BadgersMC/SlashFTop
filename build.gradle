@@ -59,7 +59,7 @@ dependencies {
     compileOnly 'com.mysql:mysql-connector-j:9.1.0'
     compileOnly 'com.github.dmulloy2:ProtocolLib:c9ee2f16e2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.12.1'
     // Use mockito-junit-jupiter for JUnit 5 integration
     testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
     // mockito-core is optional but can be included for additional utilities
