@@ -75,7 +75,7 @@ tasks.shadowJar {
     zip64 true
 
     dependencies {
-        include(dependency('xyz.xenondevs.invui:invui-core:1.44'))
+        include(dependency('xyz.xenondevs.invui:invui-core:1.45'))
         include(dependency('xyz.xenondevs.invui:inventory-access:1.44'))
         include(dependency('xyz.xenondevs.invui:inventory-access-r20:1.44:remapped-mojang'))
         include(dependency('com.zaxxer:HikariCP:6.2.1'))
