@@ -61,7 +61,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
     // Use mockito-junit-jupiter for JUnit 5 integration
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.16.1'
     // mockito-core is optional but can be included for additional utilities
     testImplementation 'org.mockito:mockito-core:5.11.0'
     testImplementation "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
