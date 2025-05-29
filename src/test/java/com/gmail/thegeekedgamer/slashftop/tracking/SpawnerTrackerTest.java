@@ -66,4 +66,26 @@ public class SpawnerTrackerTest {
         assertEquals(1, spawnerData.getStackSize(), "Stack size should be 1 for a single spawner");
         assertEquals("PIG", spawnerData.getSpawnerType(), "Spawner type should be PIG");
     }
+
+    @Test
+    public void testConcurrentTracking() throws InterruptedException {
+        int threadCount = 10;
+        int iterations = 100;
+        Thread[] threads = new Thread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            final int threadNum = i;
+            threads[i] = new Thread(() -> {
+                for (int j = 0; j < iterations; j++) {
+                    Location loc = new Location(null, threadNum, 0, j);
+                    SpawnerData data = new SpawnerData(plugin, loc, System.currentTimeMillis(), 1, "PIG", false);
+                    spawnerTracker.getTrackedSpawners().put(loc, data);
+                    spawnerTracker.getTrackedSpawners().remove(loc);
+                }
+            });
+        }
+        for (Thread t : threads) t.start();
+        for (Thread t : threads) t.join();
+        // After all threads, the map should be empty
+        assertTrue(spawnerTracker.getTrackedSpawners().isEmpty(), "Tracked spawners map should be empty after concurrent add/remove");
+    }
 }

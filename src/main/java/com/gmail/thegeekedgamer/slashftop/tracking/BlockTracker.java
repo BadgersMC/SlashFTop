@@ -44,7 +44,7 @@ public class BlockTracker implements Listener {
         this.valuableBlocks = new HashSet<>();
         this.blockBaseValues = new HashMap<>();
         this.dirtyFactions = ConcurrentHashMap.newKeySet();
-        this.blockLocks = new WeakHashMap<>();
+        this.blockLocks = new ConcurrentHashMap<>();
         this.rwLock = new ReentrantReadWriteLock(true);
 
         loadValuableBlocksFromConfig();

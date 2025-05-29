@@ -39,7 +39,7 @@ public class SpawnerTracker implements Listener {
         this.trackedSpawners = new ConcurrentHashMap<>();
         this.factionValues = new ConcurrentHashMap<>();
         this.dirtyFactions = ConcurrentHashMap.newKeySet();
-        this.spawnerLocks = new WeakHashMap<>();
+        this.spawnerLocks = new ConcurrentHashMap<>();
         this.rwLock = new ReentrantReadWriteLock(true);
         Log.info("SpawnerTracker initialized.");
     }
