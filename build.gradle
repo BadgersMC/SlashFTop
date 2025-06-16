@@ -46,7 +46,7 @@ dependencies {
     implementation 'xyz.xenondevs.invui:invui:1.44'
     implementation 'xyz.xenondevs.invui:inventory-access-r20:1.44:remapped-mojang'
     implementation 'xyz.xenondevs.invui:inventory-access:1.44'
-    implementation 'com.github.AvarionMC:yaml:1.1.8'
+    implementation 'com.github.AvarionMC:yaml:1.1.9'
     compileOnly 'io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT'
     compileOnly 'dev.rosewood:rosestacker:1.5.33'
     compileOnly 'org.mineacademy.plugin:FactionsUUID:1.6.9.5-U0.6.40-343'
@@ -80,7 +80,7 @@ tasks.shadowJar {
         include(dependency('xyz.xenondevs.invui:inventory-access-r20:1.44:remapped-mojang'))
         include(dependency('com.zaxxer:HikariCP:6.2.1'))
         include(dependency('com.mysql:mysql-connector-j:9.1.0'))
-        include(dependency('com.github.AvarionMC:yaml:1.1.8'))
+        include(dependency('com.github.AvarionMC:yaml:1.1.9'))
     }
 
     // Removed all relocate directives to keep original package structure
