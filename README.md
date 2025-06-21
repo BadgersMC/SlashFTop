@@ -1,5 +1,6 @@
 # SlashFTop - Minecraft Server Faction Top Plugin
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e1094f350b29414ca369f5cd99687aff)](https://app.codacy.com/gh/BadgersMC/SlashFTop/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 This plugin is for modern faction servers in need of a *proper* /ftop system. Unlike other implementations, this has been build with optimization in mind, which is why currently it only supports **RoseStacker**. This ftop plugin features an aging system, which allows a configurable amount of days required for a spawner stack/block stack to be placed, in order for it to achieve its max value. **This updates live.** Unlike the other ftop plugins, SlashFTop does not scan each block in a chunk periodically. Spawner and Block stacks are updated with place and break events. Naturally this means players who just go and claim a spawner will not get the value tracked, which is A OK in my book. 
 
 Players use /ftop to open a GUI of player heads, representing the leaders of each Faction. Hovering over these heads provides information about that Factions assets, and their current value.
