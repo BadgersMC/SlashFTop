@@ -4,9 +4,11 @@
 This plugin is for modern faction servers in need of a *proper* /ftop system. Unlike other implementations, this has been build with optimization in mind, which is why currently it only supports **RoseStacker**. This ftop plugin features an aging system, which allows a configurable amount of days required for a spawner stack/block stack to be placed, in order for it to achieve its max value. **This updates live.** Unlike the other ftop plugins, SlashFTop does not scan each block in a chunk periodically. Spawner and Block stacks are updated with place and break events. Naturally this means players who just go and claim a spawner will not get the value tracked, which is A OK in my book. 
 
 Players use /ftop to open a GUI of player heads, representing the leaders of each Faction. Hovering over these heads provides information about that Factions assets, and their current value.
+
 ![image](https://github.com/user-attachments/assets/32e688e2-a1c2-48b9-9783-bb8c54ed57f4)
 
 This menu live updates, meaning you will see the values update every tick to reflect the current values. This will show a life reflection of spawners and blocks aging to their full value.
+
 ![image](https://github.com/user-attachments/assets/d80d12e1-343e-4835-85bf-aa876f73c412)
 
 Clicking a head will show that factions Asset breakdown. Each head represents a stack.
